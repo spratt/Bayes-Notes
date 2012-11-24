@@ -72,22 +72,35 @@
 \section{Background}
 \label{sec:Background}
 
-Recall from STAT 2605 that if we have a sufficiently large collection of sample data drawn from an inheritly random set of variables, that the \emph{Central Limit Theorem}\footnotemark \footnotetext{\href{http://en.wikipedia.org/wiki/Central_limit_theorem}{Central Limit Theorem on Wikipedia}} states that this data will approximate a Gaussian or Normal distribution\footnotemark \footnotetext{\href{http://en.wikipedia.org/wiki/Normal_distribution}{Normal Distribution on Wikipedia}}.
+Recall from STAT 2605 that if we have a sufficiently large collection
+of sample data drawn from an inheritly random set of variables, that
+the \emph{Central Limit Theorem}\footnotemark
+\footnotetext{\href{http://en.wikipedia.org/wiki/Central_limit_theorem}{Central
+    Limit Theorem on Wikipedia}} states that this data will
+approximate a Gaussian or Normal distribution\footnotemark
+\footnotetext{\href{http://en.wikipedia.org/wiki/Normal_distribution}{Normal
+    Distribution on Wikipedia}}.
 
 \begin{displaymath}
 \dfrac{1}{\sqrt{2\pi}\sigma}e^{-\dfrac{(x-\mu)^2}{2\sigma^2}}
 \end{displaymath}
 
-Here $\mu$ is the mean and $\sigma^2$ is the variance. This follows from the idea that we \emph{expect} many of the samples to be close to the expected value, or mean, of the underlying random variable.
+Here $\mu$ is the mean and $\sigma^2$ is the variance. This follows
+from the idea that we \emph{expect} many of the samples to be close to
+the expected value, or mean, of the underlying random variable.
 
-When working with data that has multiple attributes or \emph{dimensions}, such as the iris data, there is no such thing as \emph{the} expected value, or \emph{the} sample value. Instead, we use vectors and matrices to record each dimension of our data.
+When working with data that has multiple attributes or
+\emph{dimensions}, such as the iris data, there is no such thing as
+\emph{the} expected value, or \emph{the} sample value. Instead, we use
+vectors and matrices to record each dimension of our data.
 
-More specificically, if our data has $d$ dimensions (the iris data has $4$), then $x$ becomes
-$\vec{x} = \colvec{4}{x_1}{x_2}{\vdots}{x_d}$
-and $\mu$ becomes
-$M = \colvec{4}{\mu_1}{\mu_2}{\vdots}{\mu_d}$
+More specificically, if our data has $d$ dimensions (the iris data has
+$4$), then $x$ becomes $\vec{x} = \colvec{4}{x_1}{x_2}{\vdots}{x_d}$
+and $\mu$ becomes $M = \colvec{4}{\mu_1}{\mu_2}{\vdots}{\mu_d}$
 
-and $\sigma^2$ becomes the $d \times d$ matrix $\Sigma$, whose contents depend on the type of classifier you are making, discussed below.
+and $\sigma^2$ becomes the $d \times d$ matrix $\Sigma$, whose
+contents depend on the type of classifier you are making, discussed
+below.
 
 The Normal Distribution formula is now the following.
 
@@ -102,26 +115,46 @@ The Normal Distribution formula is now the following.
 \section{Naive Bayes Classifier}
 \label{sec:nbayes}
 
-The first thing to note is that the following formulas only work to classify between two different classes.  If your training data contains more than two classes, your first step is to choose two classes of interest and disregard all other data.
+The first thing to note is that the following formulas only work to
+classify between two different classes.  If your training data
+contains more than two classes, your first step is to choose two
+classes of interest and disregard all other data.
 
 The steps we follow to build the classifier are as follows:
+
 \begin{enumerate}
-\item Partition the data into two sets, those belonging to class $A$ and those belonging to class $B$.
+
+\item Partition the data into two sets, those belonging to class $A$
+  and those belonging to class $B$.
+
 \item Calculate the Normal Distribution for each set.
+
 \item Form the \emph{classification equation}.
+
 \end{enumerate}
 
 \subsection{Partition}
 
-This step is easy, simply look over the training data and place each instance into the appropriate set according to its class.  Recall that we know the class of each sample of our training data.
+This step is easy, simply look over the training data and place each
+instance into the appropriate set according to its class.  Recall that
+we know the class of each sample of our training data.
 
 \subsection{Calculate Normal Distribution Equations}
 
-Calculating the normal distribution of the training data is just a matter of calculating $M$ and $\Sigma$.  In our case, we are calculating the Sample Mean and the Sample Covariance\footnotemark \footnotetext{\href{http://en.wikipedia.org/wiki/Sample_mean_and_sample_covariance}{Sample Mean and Sample Covariance on Wikipedia}} since we are working with sample data.
+Calculating the normal distribution of the training data is just a
+matter of calculating $M$ and $\Sigma$.  In our case, we are
+calculating the Sample Mean and the Sample Covariance\footnotemark
+\footnotetext{\href{http://en.wikipedia.org/wiki/Sample_mean_and_sample_covariance}{Sample
+    Mean and Sample Covariance on Wikipedia}} since we are working
+with sample data.
 
-Sample mean is nothing more than a simple average.  For each dimension $i$ of the sample data, calculate the sum total of the values over all instances of the class partition, and then divide by the number of instances to get $\mu_i$.
+Sample mean is nothing more than a simple average.  For each dimension
+$i$ of the sample data, calculate the sum total of the values over all
+instances of the class partition, and then divide by the number of
+instances to get $\mu_i$.
 
-In Naive Bayes, our covariance matrix is a diagonal matrix of the following form:
+In Naive Bayes, our covariance matrix is a diagonal matrix of the
+following form:
 
 \begin{displaymath}
 \begin{bmatrix} \sigma^2_1 & 0 & \cdots & 0 \\
@@ -131,21 +164,35 @@ In Naive Bayes, our covariance matrix is a diagonal matrix of the following form
 \end{bmatrix}
 \end{displaymath}
 
-Each $\sigma_i$ represents the variance of the particular dimension of the sample data.  Variance is calculated with the following:
+Each $\sigma_i$ represents the variance of the particular dimension of
+the sample data.  Variance is calculated with the following:
 
 \begin{displaymath}
  \sigma^2_i = E [{(x_i - \mu_i)}^2]
 \end{displaymath}
 
-Calculating this is just a matter of looping over every sample, and for each one, calculate the value $x_i - \mu_i$ (recall that we calcuated all the $\mu$'s earlier), add that value to a running total (i.e. the summation step), and when finished, divide by the number of samples.
+Calculating this is just a matter of looping over every sample, and
+for each one, calculate the value $x_i - \mu_i$ (recall that we
+calcuated all the $\mu$'s earlier), add that value to a running total
+(i.e. the summation step), and when finished, divide by the number of
+samples.
 
-Now that we have $M$ and $\Sigma$ for \emph{each} class, we have done all the hard work of finding the Normal Distribution for this class.  We now use these two variables to create the classification equation.
+Now that we have $M$ and $\Sigma$ for \emph{each} class, we have done
+all the hard work of finding the Normal Distribution for this class.
+We now use these two variables to create the classification equation.
 
 \subsection{Build Classifier Equation}
 
-Let $M_A$ and $\Sigma_A$ be the mean vector and covariance matrix for class $A$, and let $M_B$ and $\Sigma_B$ be the mean vector and covariance matrix for class $B$.
+Let $M_A$ and $\Sigma_A$ be the mean vector and covariance matrix for
+class $A$, and let $M_B$ and $\Sigma_B$ be the mean vector and
+covariance matrix for class $B$.
 
-In simple terms, classification is performed by plugging in the desired instance of input data $\vec{x}$ from our testing set, and seeing whether class $A$ or class $B$ is more likely at that point. This is equivalent to deciding if the output value of the Normal Distribution equation is higher for class $A$'s equation, or class $B$'s.
+In simple terms, classification is performed by plugging in the
+desired instance of input data $\vec{x}$ from our testing set, and
+seeing whether class $A$ or class $B$ is more likely at that
+point. This is equivalent to deciding if the output value of the
+Normal Distribution equation is higher for class $A$'s equation, or
+class $B$'s.
 
 \begin{displaymath}
  \dfrac{1}{\sqrt{2\pi}^d \Sigma_A} e^{-\dfrac{(\vec{x}-M_A)^T \Sigma^{-1}_A (\vec{x}-M_A)}{2}}
@@ -167,11 +214,16 @@ Where
   c & = & (M^{T}_{A}\Sigma^{-1}_{A}M_A - M^{T}_{B}\Sigma^{-1}_{B}M_B) + (-\ln{|\Sigma_A|} - \ln{|\Sigma_B|})
 \end{eqnarray*}
 
-I recommend the Jama library, available at \href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/} for performing the matrix calculations.
+I recommend the Jama library, available at
+\href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
+for performing the matrix calculations.
 
 \subsection{Classify!}
 
-Now that we have our formula, to classify any one instance of $\vec{x}$, we just plug it into our $A, B, c$ formula.  The result will be a scalar number, which indicates class $A$ if less than $0$ and class $B$ otherwise.
+Now that we have our formula, to classify any one instance of
+$\vec{x}$, we just plug it into our $A, B, c$ formula.  The result
+will be a scalar number, which indicates class $A$ if less than $0$
+and class $B$ otherwise.
 
 
 % -----------------------------------------------------------------------------
@@ -180,7 +232,10 @@ Now that we have our formula, to classify any one instance of $\vec{x}$, we just
 \section{Optimal Bayes Classifier}
 \label{sec:obayes}
 
-The only difference between Naive Bayes and Optimal Bayes classifiers is the covariance matrix used.  In the Naive classifier, the matrix was just a diagonal matrix, but in the optimal one, a full matrix is used, which has the following structure.
+The only difference between Naive Bayes and Optimal Bayes classifiers
+is the covariance matrix used.  In the Naive classifier, the matrix
+was just a diagonal matrix, but in the optimal one, a full matrix is
+used, which has the following structure.
 
 \begin{displaymath}
 \begin{bmatrix} \sigma_1\sigma_1 & \sigma_1\sigma_2 & \cdots & \sigma_1\sigma_d \\
@@ -196,7 +251,8 @@ Each of those entries is calculated by:
  \sigma_i\sigma_j = E [{(x_i - \mu_i)(x_j - \mu_j)}^2]
 \end{displaymath}
 
-All of the other steps and procedures for training and testing are the same, the only difference is the complexity of the covariance matrix.
+All of the other steps and procedures for training and testing are the
+same, the only difference is the complexity of the covariance matrix.
 
 
 % -----------------------------------------------------------------------------
@@ -204,8 +260,14 @@ All of the other steps and procedures for training and testing are the same, the
 \section{Hints}
 \label{sec:hints}
 
-Be careful when calculating covariance matrices with respect to your input data. If you have no instances of data for a particular class, then your covariance matrix may be singular and therefore not invertible!
+Be careful when calculating covariance matrices with respect to your
+input data. If you have no instances of data for a particular class,
+then your covariance matrix may be singular and therefore not
+invertible!
 
-Finally, this document was put together in a hurry, so it is possible that there are some $M^T$'s where there should be $M$'s, and other such minor errors.  You should be able to figure out the correct variation of the forumla from MATH 1107.
+Finally, this document was put together in a hurry, so it is possible
+that there are some $M^T$'s where there should be $M$'s, and other
+such minor errors.  You should be able to figure out the correct
+variation of the formula from MATH 1107.
 
 \end{document}
