@@ -1,7 +1,7 @@
 \documentclass{article}
 
 % -----------------------------------------------------------------------------
-% Pre-Amble
+% Includes
 % -----------------------------------------------------------------------------
 
 \usepackage{fullpage} % use more of the page for articles
@@ -9,11 +9,16 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb} % More symbols
-\usepackage[ruled]{algorithm2e} % Algorithms
 \usepackage{mdwlist} % compact lists
 \usepackage{hyperref}
-
 \usepackage{amsthm} % Theorems
+\usepackage{url} % URLs
+\usepackage{color}
+
+% -----------------------------------------------------------------------------
+% Custom Stuff
+% -----------------------------------------------------------------------------
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}
@@ -21,15 +26,6 @@
 \newtheorem{problem}{Problem}
 \newtheorem{definition}{Definition}
 \newtheorem{property}{Property}
-
-\usepackage{listings} % Package for including code in the document
-
-\usepackage[small,bf,hang]{caption} % Captions
-\setlength{\captionmargin}{12pt}
-
-\usepackage{url} % URLs
-
-\usepackage{color}
 
 \newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
@@ -65,7 +61,6 @@
 \begin{document}
 
 \maketitle
-
 
 % -----------------------------------------------------------------------------
 % -----------------------------------------------------------------------------
