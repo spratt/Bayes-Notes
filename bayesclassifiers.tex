@@ -54,7 +54,7 @@
 % -----------------------------------------------------------------------------
 
 \title{Implementing Bayes Classifiers}
-\author{Gregory Bint\\
+\author{Gregory Bint \footnote{Edited by Simon Pratt}\\
 	Carleton University}
 \date{\today}
 
@@ -101,7 +101,7 @@ below.
 The Normal Distribution formula is now the following.
 
 \begin{displaymath}
-\dfrac{1}{\sqrt{2\pi}^d \Sigma} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
+\dfrac{1}{\sqrt{(2\pi)^{d} | \Sigma |}} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
 \end{displaymath}
 
 
@@ -191,13 +191,13 @@ Normal Distribution equation is higher for class $A$'s equation, or
 class $B$'s.
 
 \begin{displaymath}
- \dfrac{1}{\sqrt{2\pi}^d \Sigma_A} e^{-\dfrac{(\vec{x}-M_A)^T \Sigma^{-1}_A (\vec{x}-M_A)}{2}}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A|}} e^{-\dfrac{(\vec{x}-M_A)^T \Sigma^{-1}_A (\vec{x}-M_A)}{2}}
   \gtrless^{\omega_A}_{\omega_B} 
-  \dfrac{1}{\sqrt{2\pi}^d \Sigma_B} e^{-\dfrac{(\vec{x}-M_B)^T \Sigma^{-1}_B (\vec{x}-M_B)}{2}}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B|}} e^{-\dfrac{(\vec{x}-M_B)^T \Sigma^{-1}_B (\vec{x}-M_B)}{2}}
 \end{displaymath}
 
 
-Through many, many steps of simplification, this forumula reduces to:
+Through many, many steps of simplification, this formula reduces to:
 
 \begin{displaymath}
 \vec{x}^{T}A\vec{x} + B^{T}\vec{x} + c  \lessgtr^{\omega_A}_{\omega_B} 0
@@ -206,13 +206,14 @@ Through many, many steps of simplification, this forumula reduces to:
 Where
 \begin{eqnarray*}
   A & = & \Sigma^{-1}_A - \Sigma^{-1}_B \\
-  B & = & 2(M^{T}_{B}\Sigma^{-1}_B - M^{T}_{A}\Sigma^{-1}_A)\\
+  B & = & 2(\Sigma^{-1}_B M_{B} - \Sigma^{-1}_A M_{A})\\
   c & = & (M^{T}_{A}\Sigma^{-1}_{A}M_A - M^{T}_{B}\Sigma^{-1}_{B}M_B) + (-\ln{|\Sigma_A|} - \ln{|\Sigma_B|})
 \end{eqnarray*}
 
 I recommend the Jama library, available at
 \href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
-for performing the matrix calculations.
+for performing the matrix calculations.  Or the NumPy library,
+available at \href{http://numpy.scipy.org/}.
 
 \subsection{Classify!}
 

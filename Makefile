@@ -1,7 +1,7 @@
 .PHONY=open
 
 open: bayesclassifiers.pdf
-	gnome-open bayesclassifiers.pdf
+	gnome-open bayesclassifiers.pdf || open bayesclassifiers.pdf
 
 bayesclassifiers.pdf: bayesclassifiers.tex
 	pdflatex bayesclassifiers.tex
