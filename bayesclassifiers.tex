@@ -13,7 +13,13 @@
 \usepackage{hyperref}
 \usepackage{amsthm} % Theorems
 \usepackage{url} % URLs
+\usepackage{hyperref}
 \usepackage{color}
+
+% -----------------------------------------------------------------------------
+% Configuration
+% -----------------------------------------------------------------------------
+
 
 % -----------------------------------------------------------------------------
 % Custom Stuff
@@ -54,9 +60,14 @@
 % -----------------------------------------------------------------------------
 
 \title{Implementing Bayes Classifiers}
-\author{Gregory Bint \footnote{Edited by Simon Pratt}\\
-	Carleton University}
+\author{Gregory Bint \\
+  Simon Pratt
+  \footnote{Simon can be reached at
+    \href{mailto:spratt@scs.carleton.ca}{spratt@scs.carleton.ca} for questions.} \\
+  {\small Carleton University}}
 \date{\today}
+
+\bibliographystyle{plain}
 
 \begin{document}
 
@@ -70,12 +81,9 @@
 
 Recall from STAT 2605 that if we have a sufficiently large collection
 of sample data drawn from an inheritly random set of variables, that
-the \emph{Central Limit Theorem}\footnotemark
-\footnotetext{\href{http://en.wikipedia.org/wiki/Central_limit_theorem}{Central
-    Limit Theorem on Wikipedia}} states that this data will
-approximate a Gaussian or Normal distribution\footnotemark
-\footnotetext{\href{http://en.wikipedia.org/wiki/Normal_distribution}{Normal
-    Distribution on Wikipedia}}.
+the \emph{Central Limit Theorem} \cite{wiki_clt} states that this data
+will approximate a \emph{Gaussian} or \emph{Normal} distribution
+\cite{wiki_normal_dist}.
 
 \begin{displaymath}
 \dfrac{1}{\sqrt{2\pi}\sigma}e^{-\dfrac{(x-\mu)^2}{2\sigma^2}}
@@ -98,17 +106,26 @@ and $\sigma^2$ becomes the $d \times d$ matrix $\Sigma$, whose
 contents depend on the type of classifier you are making, discussed
 below.
 
-The Normal Distribution formula is now the following.
+The Gaussian multivariate formula is now the following: \cite{wiki_mv_gauss}
 
 \begin{displaymath}
-\dfrac{1}{\sqrt{(2\pi)^{d} | \Sigma |}} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma|}} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
+  = \dfrac{1}{\sqrt{(2\pi)^d |\Sigma| e^{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}}}
+  = \dfrac{1}{\sqrt{(2\pi)^d |\Sigma| e^{D'(\vec{x},M,\Sigma)}}}
 \end{displaymath}
 
+Where $D'$ is the square of the \emph{Mahalanobis} distance function
+\cite{wiki_mahalanobis}.  The square of the \emph{Mahalanobis} distance
+function is defined as:
+
+\begin{displaymath}
+  D'(\vec{x},M,\Sigma) = (\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)
+\end{displaymath}
 
 % -----------------------------------------------------------------------------
 % -----------------------------------------------------------------------------
 
-\section{Naive Bayes Classifier}
+\section{Na\"ive Bayes Classifier}
 \label{sec:nbayes}
 
 The first thing to note is that the following formulas only work to
@@ -139,17 +156,15 @@ we know the class of each sample of our training data.
 
 Calculating the normal distribution of the training data is just a
 matter of calculating $M$ and $\Sigma$.  In our case, we are
-calculating the Sample Mean and the Sample Covariance\footnotemark
-\footnotetext{\href{http://en.wikipedia.org/wiki/Sample_mean_and_sample_covariance}{Sample
-    Mean and Sample Covariance on Wikipedia}} since we are working
-with sample data.
+calculating the Sample Mean and the Sample Covariance
+\cite{wiki_covariance} since we are working with sample data.
 
 Sample mean is nothing more than a simple average.  For each dimension
 $i$ of the sample data, calculate the sum total of the values over all
 instances of the class partition, and then divide by the number of
 instances to get $\mu_i$.
 
-In Naive Bayes, our covariance matrix is a diagonal matrix of the
+In Na\"ive Bayes, our covariance matrix is a diagonal matrix of the
 following form:
 
 \begin{displaymath}
@@ -191,36 +206,100 @@ Normal Distribution equation is higher for class $A$'s equation, or
 class $B$'s.
 
 \begin{displaymath}
-  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A|}} e^{-\dfrac{(\vec{x}-M_A)^T \Sigma^{-1}_A (\vec{x}-M_A)}{2}}
-  \gtrless^{\omega_A}_{\omega_B} 
-  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B|}} e^{-\dfrac{(\vec{x}-M_B)^T \Sigma^{-1}_B (\vec{x}-M_B)}{2}}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}} 
+  \gtrless^{\omega_A}_{\omega_B}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}}
 \end{displaymath}
 
+This formula gives the probability that a given data point is in the
+distribution.  Given the covariance matrix and mean vector for both
+class A and class B, we have the following inequality that determines
+if a sample vector $\vec{x}$ is in class A or B:
 
-Through many, many steps of simplification, this formula reduces to:
-
-\begin{displaymath}
-\vec{x}^{T}A\vec{x} + B^{T}\vec{x} + c  \lessgtr^{\omega_A}_{\omega_B} 0
-\end{displaymath}
-
-Where
-\begin{eqnarray*}
-  A & = & \Sigma^{-1}_A - \Sigma^{-1}_B \\
-  B & = & 2(\Sigma^{-1}_B M_{B} - \Sigma^{-1}_A M_{A})\\
-  c & = & (M^{T}_{A}\Sigma^{-1}_{A}M_A - M^{T}_{B}\Sigma^{-1}_{B}M_B) + (-\ln{|\Sigma_A|} - \ln{|\Sigma_B|})
-\end{eqnarray*}
+\begin{align*}
+  %
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}} 
+  &\gtrless^{\omega_A}_{\omega_B}
+  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}} \\
+  %
+  \frac{\sqrt{(2\pi)^d |\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}}{\sqrt{(2\pi)^d |\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}}
+  &\gtrless^{\omega_A}_{\omega_B}
+  1 \\
+  %
+  \left(
+  \frac{\sqrt{(2\pi)^d |\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}}{\sqrt{(2\pi)^d |\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}}
+  \right)^2
+  &\gtrless^{\omega_A}_{\omega_B}
+  1^2 \\
+  %
+  \frac{(2\pi)^d |\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}{(2\pi)^d |\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  &\gtrless^{\omega_A}_{\omega_B}
+  1 \\
+  %
+  \frac{|\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  &\gtrless^{\omega_A}_{\omega_B}
+  \frac{(2\pi)^d}{(2\pi)^d} \\
+  %
+  \frac{|\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  &\gtrless^{\omega_A}_{\omega_B}
+  1 \\
+  %
+  ln \left(
+  \frac{|\Sigma_B|
+      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
+      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  \right)
+  &\gtrless^{\omega_A}_{\omega_B}
+  ln(1) \\
+  %
+  ln(|\Sigma_B|e^{D'(\vec{x},M_B,\Sigma_B)}) -
+  ln(|\Sigma_A|e^{D'(\vec{x},M_A,\Sigma_A)})
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+  ln|\Sigma_B| + ln(e^{D'(\vec{x},M_B,\Sigma_B)}) -
+  ln|\Sigma_A| - ln(e^{D'(\vec{x},M_A,\Sigma_A)})
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+  ln|\Sigma_B| + D'(\vec{x},M_B,\Sigma_B)ln(e) -
+  ln|\Sigma_A| - D'(\vec{x},M_A,\Sigma_A)ln(e)
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+  ln|\Sigma_B| + D'(\vec{x},M_B,\Sigma_B) -
+  ln|\Sigma_A| - D'(\vec{x},M_A,\Sigma_A)
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+  ln|\Sigma_B| - ln|\Sigma_A| +
+  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+\end{align*}
 
 I recommend the Jama library, available at
 \href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
 for performing the matrix calculations.  Or the NumPy library,
-available at \href{http://numpy.scipy.org/}.
+available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
 
 \subsection{Classify!}
 
 Now that we have our formula, to classify any one instance of
-$\vec{x}$, we just plug it into our $A, B, c$ formula.  The result
-will be a scalar number, which indicates class $A$ if less than $0$
-and class $B$ otherwise.
+$\vec{x}$, we just plug it into our formula.  The result will be a
+scalar number, which indicates class $A$ if less than $0$ and class
+$B$ otherwise.
 
 
 % -----------------------------------------------------------------------------
@@ -229,8 +308,8 @@ and class $B$ otherwise.
 \section{Optimal Bayes Classifier}
 \label{sec:obayes}
 
-The only difference between Naive Bayes and Optimal Bayes classifiers
-is the covariance matrix used.  In the Naive classifier, the matrix
+The only difference between Na\"ive Bayes and Optimal Bayes classifiers
+is the covariance matrix used.  In the Na\"ive classifier, the matrix
 was just a diagonal matrix, but in the optimal one, a full matrix is
 used, which has the following structure.
 
@@ -260,11 +339,9 @@ same, the only difference is the complexity of the covariance matrix.
 Be careful when calculating covariance matrices with respect to your
 input data. If you have no instances of data for a particular class,
 then your covariance matrix may be singular and therefore not
-invertible!
+invertible!  You should look into the Pseudo-Inverse of a
+matrix. \cite{wiki_pinv}
 
-Finally, this document was put together in a hurry, so it is possible
-that there are some $M^T$'s where there should be $M$'s, and other
-such minor errors.  You should be able to figure out the correct
-variation of the formula from MATH 1107.
+\bibliography{references}
 
 \end{document}
