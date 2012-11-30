@@ -339,7 +339,8 @@ same, the only difference is the complexity of the covariance matrix.
 Be careful when calculating covariance matrices with respect to your
 input data. If you have no instances of data for a particular class,
 then your covariance matrix may be singular and therefore not
-invertible!  You should look into the Pseudo-Inverse of a
+invertible!  This can be quickly determined by checking that the
+determinant is not zero.  You should look into the Pseudo-Inverse of a
 matrix. \cite{wiki_pinv}
 
 \bibliography{references}
