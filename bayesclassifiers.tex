@@ -151,13 +151,13 @@ The steps we follow to build the classifier are as follows:
 
 \end{enumerate}
 
-\subsection{Partition}
+\subsection{Partition the data}
 
 This step is easy, simply look over the training data and place each
 instance into the appropriate set according to its class.  Recall that
 we know the class of each sample of our training data.
 
-\subsection{Calculate Normal Distribution Equations}
+\subsection{Calculate the Normal Distribution Equations}
 \label{ss:norm_dist}
 
 Calculating the normal distribution of the training data is just a
@@ -190,7 +190,7 @@ the sample data.  Variance is calculated with the following:
 
 Calculating this is just a matter of looping over every sample, and
 for each one, calculate the value $x_i - \mu_i$ (recall that we
-calcuated all the $\mu$'s earlier), add that value to a running total
+calculated all the $\mu$'s earlier), add that value to a running total
 (i.e. the summation step), and when finished, divide by the number of
 samples.
 
@@ -198,7 +198,7 @@ Now that we have $M$ and $\Sigma$ for \emph{each} class, we have done
 all the hard work of finding the Normal Distribution for this class.
 We now use these two variables to create the classification equation.
 
-\subsection{Build Classifier Equation}
+\subsection{Build the Classifier Equation}
 
 Let $M_A$ and $\Sigma_A$ be the mean vector and covariance matrix for
 class $A$, and let $M_B$ and $\Sigma_B$ be the mean vector and
@@ -206,10 +206,9 @@ covariance matrix for class $B$.
 
 In simple terms, classification is performed by plugging in the
 desired instance of input data $\vec{x}$ from our testing set, and
-seeing whether class $A$ or class $B$ is more likely at that
-point. This is equivalent to deciding if the output value of the
-Normal Distribution equation is higher for class $A$'s equation, or
-class $B$'s.
+seeing whether class $A$ or class $B$ is more likely (remember: this is all just
+probabilities). This is equivalent to deciding if the output value of the Normal
+Distribution equation is higher for class $A$'s equation, or class $B$'s.
 
 \begin{displaymath}
   \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}} 
@@ -295,7 +294,7 @@ if a sample vector $\vec{x}$ is in class A or B:
   %
 \end{align*}
 
-I recommend the Jama library, available at
+We recommend the Jama library, available at
 \href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
 for performing the matrix calculations.  Or the NumPy library,
 available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
@@ -304,7 +303,7 @@ available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
 
 Now that we have our formula, to classify any one instance of
 $\vec{x}$, we just plug it into our formula.  The result will be a
-scalar number, which indicates class $A$ if less than $0$ and class
+scalar number, which indicates class $A$ if it is less than $0$ and class
 $B$ otherwise.
 
 
