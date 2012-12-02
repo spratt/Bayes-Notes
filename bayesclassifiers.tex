@@ -218,8 +218,78 @@ Distribution equation is higher for class $A$'s equation, or class $B$'s.
 
 This formula gives the probability that a given data point is in the
 distribution.  Given the covariance matrix and mean vector for both
-class A and class B, we have the following inequality that determines
-if a sample vector $\vec{x}$ is in class A or B:
+class A and class B, after many steps of simplification, we get the
+following inequality:
+
+\begin{align*}
+  %
+  ln|\Sigma_B| - ln|\Sigma_A| +
+  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+\end{align*}
+
+We recommend the Jama library, available at
+\href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
+for performing the matrix calculations.  Or the NumPy library,
+available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
+
+\subsection{Classify!}
+
+Now that we have our formula, to classify any one instance of
+$\vec{x}$, we just plug it into our formula.  The result will be a
+scalar number, which indicates class $A$ if it is less than $0$ and class
+$B$ otherwise.
+
+
+% -----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
+
+\section{Optimal Bayes Classifier}
+\label{sec:obayes}
+
+The only difference between Na\"ive Bayes and Optimal Bayes classifiers
+is the covariance matrix used.  In the Na\"ive classifier, the matrix
+was just a diagonal matrix (Section \ref{ss:norm_dist}), but in the optimal one,
+a full matrix is used, which has the following structure.
+
+\begin{displaymath}
+\begin{bmatrix} \sigma_1\sigma_1 & \sigma_1\sigma_2 & \cdots & \sigma_1\sigma_d \\
+				 \sigma_2\sigma_1 & \sigma_2\sigma_2 & \cdots & \sigma_2\sigma_d \\
+				 \vdots & \vdots & \ddots & \vdots \\
+				 \sigma_d\sigma_1 & \sigma_d\sigma_2 & \cdots & \sigma_d\sigma_d
+\end{bmatrix}
+\end{displaymath}
+
+Each of those entries is calculated by:
+
+\begin{displaymath}
+ \sigma_i\sigma_j = E [{(x_i - \mu_i)(x_j - \mu_j)}]
+\end{displaymath}
+
+All of the other steps and procedures for training and testing are the
+same, the only difference is the complexity of the covariance matrix.
+
+
+% -----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
+\section{Hints}
+\label{sec:hints}
+
+Be careful when calculating covariance matrices with respect to your
+input data. If you have no instances of data for a particular class,
+then your covariance matrix may be singular and therefore not
+invertible!  This can be quickly determined by checking that the
+determinant is not zero.  You may also want to look into the Pseudo-Inverse of a
+matrix as detailed in \cite{wiki_pinv}.
+
+\newpage
+\appendix
+\section{Derivation}
+\label{app:derivation}
+
+The full derivation of the given formula follows:
 
 \begin{align*}
   %
@@ -293,60 +363,6 @@ if a sample vector $\vec{x}$ is in class A or B:
   0 \\
   %
 \end{align*}
-
-We recommend the Jama library, available at
-\href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
-for performing the matrix calculations.  Or the NumPy library,
-available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
-
-\subsection{Classify!}
-
-Now that we have our formula, to classify any one instance of
-$\vec{x}$, we just plug it into our formula.  The result will be a
-scalar number, which indicates class $A$ if it is less than $0$ and class
-$B$ otherwise.
-
-
-% -----------------------------------------------------------------------------
-% -----------------------------------------------------------------------------
-
-\section{Optimal Bayes Classifier}
-\label{sec:obayes}
-
-The only difference between Na\"ive Bayes and Optimal Bayes classifiers
-is the covariance matrix used.  In the Na\"ive classifier, the matrix
-was just a diagonal matrix (Section \ref{ss:norm_dist}), but in the optimal one,
-a full matrix is used, which has the following structure.
-
-\begin{displaymath}
-\begin{bmatrix} \sigma_1\sigma_1 & \sigma_1\sigma_2 & \cdots & \sigma_1\sigma_d \\
-				 \sigma_2\sigma_1 & \sigma_2\sigma_2 & \cdots & \sigma_2\sigma_d \\
-				 \vdots & \vdots & \ddots & \vdots \\
-				 \sigma_d\sigma_1 & \sigma_d\sigma_2 & \cdots & \sigma_d\sigma_d
-\end{bmatrix}
-\end{displaymath}
-
-Each of those entries is calculated by:
-
-\begin{displaymath}
- \sigma_i\sigma_j = E [{(x_i - \mu_i)(x_j - \mu_j)}]
-\end{displaymath}
-
-All of the other steps and procedures for training and testing are the
-same, the only difference is the complexity of the covariance matrix.
-
-
-% -----------------------------------------------------------------------------
-% -----------------------------------------------------------------------------
-\section{Hints}
-\label{sec:hints}
-
-Be careful when calculating covariance matrices with respect to your
-input data. If you have no instances of data for a particular class,
-then your covariance matrix may be singular and therefore not
-invertible!  This can be quickly determined by checking that the
-determinant is not zero.  You may also want to look into the Pseudo-Inverse of a
-matrix as detailed in \cite{wiki_pinv}.
 
 \bibliography{references}
 
