@@ -79,9 +79,9 @@
 \section{Background}
 \label{sec:Background}
 
-Recall from statistics that if we have a sufficiently large collection
-of sample data drawn from an inherently random set of variables, that
-the \emph{Central Limit Theorem} \cite{wiki_clt} states that this data
+Recall that if we have a sufficiently large collection of sample data
+drawn from an inherently random set of variables, that the
+\emph{Central Limit Theorem} \cite{wiki_clt} states that this data
 will approximate a \emph{Gaussian} or \emph{Normal} distribution
 \cite{wiki_normal_dist}.
 
@@ -275,17 +275,144 @@ same, the only difference is the complexity of the covariance matrix.
 
 % -----------------------------------------------------------------------------
 % -----------------------------------------------------------------------------
-\section{Hints}
-\label{sec:hints}
+\section{Building A Classifier}
+\label{sec:tutorial}
 
-Be careful when calculating covariance matrices with respect to your
-input data. If you have no instances of data for a particular class,
-then your covariance matrix may be singular and therefore not
-invertible!  This can be quickly determined by checking that the
-determinant is not zero.  You may also want to look into the Pseudo-Inverse of a
-matrix as detailed in \cite{wiki_pinv}.
+With this understanding of the theory, we can build a working
+classifier.  We are given $n$ data points, each consisting of $k$
+numerical observations and a classification.
 
-\newpage
+This data is often stored as a file wherein each line contains
+observations, an indication of the classification, and possibly
+extraneous data.  This must be parsed and stored in some convenient
+structure.
+
+\subsection{Partition the Data into Training and Testing Sets}
+
+We begin by partition the dataset into a \emph{training set} and a
+\emph{testing set}.  The purpose of the \emph{training set} is to
+build the covariance matrix and mean vector for each class.  The
+purpose of the \emph{testing set} is to provide independent data with
+which to test the accuracy of the classifier.
+
+The simplest way to partition the dataset is to choose the first
+$\ceil{n/2}$ tuples for the \emph{training set} and the remaining
+$\floor{n/2}$ tuples for the \emph{testing set}.  We will discuss
+other partitioning schemes at the end of this section.
+
+\subsection{Partition the Training Set by Class}
+
+Next, we further partition the \emph{training set} by class.  If there
+are two classes $A$ and $B$, let the set of data points belonging to
+class $A$ be $T_A$ and similarly let the set of data points belonging
+to $B$ be $T_B$.
+
+It is important to note that if either $T_A$ or $T_B$ is empty,
+classification will almost certainly be hopelessly inaccurate.  It is
+important to have some strategy to handle this case, and a reasonable
+strategy would be to throw an error.
+
+\subsection{Calculate the Mean Vectors}
+
+The mean vector is a $k$-vector $M$ (where $k$ is the number of
+numerical observations in each data point), in which the $i$th element
+is the mean of all $i$th numerical observations.  We construct this by
+first building a sum vector whose $i$th element is the sum of all
+$i$th numerical observations, then divide each element by the number
+of data points.
+
+We do this to build a mean vector $M_A$ for $T_A$ and $M_B$ for $T_B$
+separately.
+
+\subsection{Calculate the Variance Vector}
+
+Whether we are building a na\"ive or optimal classifier, we must
+calculate the variances for each observation just as we calculated the
+mean for each observation in the previous step.
+
+We construct the variance vector by instantiating a $k$-vector $V$ and
+iterating over the data points.  For the $i$th element of each data
+point, we subtract from its value the $i$th element in our mean
+vector.  We square this value and add the result to the $i$th element
+of $V$.  Once we've iterated over every data point, we divide each
+element of $V$ by the number of data points, and take the square root.
+
+We do this to build a variance vector $V_A$ for $T_A$ and $V_B$ for
+$T_B$ separately.
+
+\subsection{Calculate the Covariance Matrix}
+
+If we are building the optimal classifier and our variance vector $V$
+is a column vector, our covariance matrix is simply $V^TV$.
+
+We have $\Sigma_A = V_A^TV_A$ and $\Sigma_B = V_B^TV_B$.
+
+If we are building the na\"ive classifier, we take the covariance
+matrices from the optimal classifier and simply set every element to
+$0$ except along the diagonal starting at the top left and ending at
+the bottom right.
+
+\subsection{Classify!}
+
+Now we use the formula we derived earlier:
+
+\begin{align*}
+  %
+  ln|\Sigma_B| - ln|\Sigma_A| +
+  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
+  &\gtrless^{\omega_A}_{\omega_B}
+  0 \\
+  %
+\end{align*}
+
+Where $\vec{x}$ is a vector of numerical observations we would like to
+classify.
+
+We calculate the classification value $c$:
+
+\begin{align*}
+  %
+  c 
+  &=
+  ln|\Sigma_B| - ln|\Sigma_A| +
+  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A) \\
+  &=
+  ln|\Sigma_B| - ln|\Sigma_A| +
+  (\vec{x}-M_B)^T \Sigma_B^{-1} (\vec{x}-M_B) - 
+  (\vec{x}-M_A)^T \Sigma_A^{-1} (\vec{x}-M_A)
+  %
+\end{align*}
+
+If this $c$ is greater than zero, the observations most likely belong
+to class $A$, otherwise class $B$.
+
+Be careful when calculating the inverse of the covariance matrix,
+because it may be singular, i.e. have no inverse.  In this case, your
+library may provide a \emph{Pseudo-Inverse}\cite{wiki_pinv} which is
+an approximation of the
+
+\subsection{Testing}
+
+In the first step, we partitioned the sample into a \emph{Training
+  Set} and a \emph{Testing Set}.  To test, we simply run the
+  classifier against all the observations in the \emph{Testing Set}
+  and keep a score of how many are correctly classified.
+
+To more accurately test the classifier, you could randomize which
+observations are used to train the classifier.
+
+You could also use $K$-fold cross-validation in which the observations
+are partitioned into $K$ groups and $K-1$ of the groups are used to
+train and the remaining group is used to test.  Using the same
+partitioning, a new classifier is trained on $K-1$ of the groups and a
+different group is used to test.  This is repeated $K$ times such that
+every group is used to test once.
+
+Finally, both randomization and $K$-fold cross-validation can be used
+together and the results averaged.
+
+% -----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
 \appendix
 \section{Derivation}
 \label{app:derivation}
