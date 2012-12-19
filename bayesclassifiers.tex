@@ -425,70 +425,30 @@ The full derivation of the given formula follows:
   &\gtrless^{\omega_A}_{\omega_B}
   \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}} \\
   %
-  \frac{\sqrt{(2\pi)^d |\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}}{\sqrt{(2\pi)^d |\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}}
+  \left(\dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}}\right)^2
   &\gtrless^{\omega_A}_{\omega_B}
-  1 \\
+  \left(\dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}}\right)^2 \\
   %
-  \left(
-  \frac{\sqrt{(2\pi)^d |\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}}{\sqrt{(2\pi)^d |\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}}
-  \right)^2
+  \dfrac{1}{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}
   &\gtrless^{\omega_A}_{\omega_B}
-  1^2 \\
+  \dfrac{1}{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}} \\
   %
-  \frac{(2\pi)^d |\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}{(2\pi)^d |\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  \dfrac{1}{|\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}
   &\gtrless^{\omega_A}_{\omega_B}
-  1 \\
+  \dfrac{1}{|\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}} \\
   %
-  \frac{|\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  \ln\left(\dfrac{1}{|\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}\right)
   &\gtrless^{\omega_A}_{\omega_B}
-  \frac{(2\pi)^d}{(2\pi)^d} \\
+  \ln\left(\dfrac{1}{|\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}\right) \\
   %
-  \frac{|\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}
+  -\ln|\Sigma_A| - \ln(e^{D'(\vec{x},M_A,\Sigma_A)})
   &\gtrless^{\omega_A}_{\omega_B}
-  1 \\
+  -\ln|\Sigma_B| - \ln(e^{D'(\vec{x},M_B,\Sigma_B)}) \\
   %
-  ln \left(
-  \frac{|\Sigma_B|
-      e^{D'(\vec{x},M_B,\Sigma_B)}}{|\Sigma_A|
-      e^{D'(\vec{x},M_A,\Sigma_A)}}
-  \right)
-  &\gtrless^{\omega_A}_{\omega_B}
-  ln(1) \\
-  %
-  ln(|\Sigma_B|e^{D'(\vec{x},M_B,\Sigma_B)}) -
-  ln(|\Sigma_A|e^{D'(\vec{x},M_A,\Sigma_A)})
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-  ln|\Sigma_B| + ln(e^{D'(\vec{x},M_B,\Sigma_B)}) -
-  ln|\Sigma_A| - ln(e^{D'(\vec{x},M_A,\Sigma_A)})
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-  ln|\Sigma_B| + D'(\vec{x},M_B,\Sigma_B)ln(e) -
-  ln|\Sigma_A| - D'(\vec{x},M_A,\Sigma_A)ln(e)
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-  ln|\Sigma_B| + D'(\vec{x},M_B,\Sigma_B) -
-  ln|\Sigma_A| - D'(\vec{x},M_A,\Sigma_A)
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-  ln|\Sigma_B| - ln|\Sigma_A| +
+  \ln|\Sigma_B| - \ln|\Sigma_A| +
   D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
   &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
+  0
   %
 \end{align*}
 
