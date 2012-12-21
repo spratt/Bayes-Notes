@@ -9,51 +9,20 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb} % More symbols
-\usepackage{mdwlist} % compact lists
-\usepackage{hyperref}
 \usepackage{amsthm} % Theorems
+\usepackage{mdwlist} % compact lists and \note environment
 \usepackage{url} % URLs
 \usepackage{hyperref}
-\usepackage{color}
 
-% -----------------------------------------------------------------------------
-% Configuration
-% -----------------------------------------------------------------------------
-
-
-% -----------------------------------------------------------------------------
-% Custom Stuff
-% -----------------------------------------------------------------------------
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}
-\newtheorem{openproblem}{Open Problem}
-\newtheorem{problem}{Problem}
-\newtheorem{definition}{Definition}
-\newtheorem{property}{Property}
+\usepackage{parskip} % add space b/w pars instead of indenting 
+\makeatletter % fix ams theorem spacing to work with parskip
+\def\thm@space@setup{
+  \thm@preskip=\parskip \thm@postskip=\parskip
+}
+\makeatother
 
 \newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
-
-% column vector stuff
-\newcount\colveccount
-\newcommand*\colvec[1]{
-        \global\colveccount#1
-        \begin{bmatrix}
-        \colvecnext
-}
-\def\colvecnext#1{
-        #1
-        \global\advance\colveccount-1
-        \ifnum\colveccount>0
-                \\
-                \expandafter\colvecnext
-        \else
-                \end{bmatrix}
-        \fi
-}
-
 
 % -----------------------------------------------------------------------------
 % Top Matter
@@ -80,14 +49,14 @@
 \label{sec:Background}
 
 Recall that if we have a sufficiently large collection of sample data
-drawn from an inherently random set of variables, that the
+drawn from an inherently random set of variables then the
 \emph{Central Limit Theorem} \cite{wiki_clt} states that this data
 will approximate a \emph{Gaussian} or \emph{Normal} distribution
 \cite{wiki_normal_dist}.
-
-\begin{displaymath}
+\begin{equation}
+\label{e_sv_gauss}
 \dfrac{1}{\sqrt{2\pi}\sigma}e^{-\dfrac{(x-\mu)^2}{2\sigma^2}}
-\end{displaymath}
+\end{equation}
 
 Here $\mu$ is the mean and $\sigma^2$ is the variance. This follows
 from the idea that we \emph{expect} many of the samples to be close to
@@ -100,29 +69,35 @@ vectors and matrices to record each dimension of our data.
 
 More specifically, if our data has $d$ dimensions (the iris data has
 $4$), then:
-
 \[ 
-x \text{ becomes } \vec{x} = \colvec{4}{x_1}{x_2}{\vdots}{x_d}
+x \text{ becomes } \vec{x} = 
+\begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_d \end{bmatrix}
 \text { and } 
-\mu \text{ becomes } M = \colvec{4}{\mu_1}{\mu_2}{\vdots}{\mu_d}
+\mu \text{ becomes } M = 
+\begin{bmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_d \end{bmatrix}
 \]
 
 and $\sigma^2$ becomes the $d \times d$ matrix $\Sigma$, whose
 contents depend on the type of classifier you are making, discussed
 below.
 
-The Gaussian multivariate formula is now the following\cite{wiki_mv_gauss}:
+If we modify Equation \ref{e_sv_gauss}, above, to use these
+multi-dimensional variables, we get the Gaussian multivariate
+formula\cite{wiki_mv_gauss}, which looks as follows:
+\begin{equation}
+\label{e_mv_gauss}
+\dfrac{1}{\sqrt{(2\pi)^d |\Sigma|}} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
+\end{equation}
 
-\begin{displaymath}
-  \dfrac{1}{\sqrt{(2\pi)^d |\Sigma|}} e^{-\dfrac{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}{2}}
-  = \dfrac{1}{\sqrt{(2\pi)^d |\Sigma| e^{(\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)}}}
-  = \dfrac{1}{\sqrt{(2\pi)^d |\Sigma| e^{D'(\vec{x},M,\Sigma)}}}
-\end{displaymath}
+We can then simplify Equation \ref{e_mv_gauss} to the following:
+\begin{equation}
+\label{e_mv_guass2}
+\dfrac{1}{\sqrt{(2\pi)^d |\Sigma| e^{D'(\vec{x},M,\Sigma)}}}
+\end{equation}
 
 Where $D'$ is the square of the \emph{Mahalanobis} distance function
 \cite{wiki_mahalanobis}.  The square of the \emph{Mahalanobis} distance
 function is defined as:
-
 \begin{displaymath}
   D'(\vec{x},M,\Sigma) = (\vec{x}-M)^T \Sigma^{-1} (\vec{x}-M)
 \end{displaymath}
@@ -142,7 +117,7 @@ The steps we follow to build the classifier are as follows:
 
 \begin{enumerate}
 
-\item Partition the data into two sets, those belonging to class $A$
+\item Partition the training data into two sets, those belonging to class $A$
   and those belonging to class $B$.
 
 \item Calculate the Normal Distribution for each set.
@@ -189,7 +164,7 @@ the sample data.  Variance is calculated with the following:
 \end{displaymath}
 
 Calculating this is just a matter of looping over every sample, and
-for each one, calculate the value $x_i - \mu_i$ (recall that we
+for each one, we calculate the value $x_i - \mu_i$ (recall that we
 calculated all the $\mu$'s earlier), add that value to a running total
 (i.e. the summation step), and when finished, divide by the number of
 samples.
@@ -198,23 +173,24 @@ Now that we have $M$ and $\Sigma$ for \emph{each} class, we have done
 all the hard work of finding the Normal Distribution for this class.
 We now use these two variables to create the classification equation.
 
-\subsection{Build the Classifier Equation}
+\subsection{Build the Classification Equation}
 
 Let $M_A$ and $\Sigma_A$ be the mean vector and covariance matrix for
 class $A$, and let $M_B$ and $\Sigma_B$ be the mean vector and
 covariance matrix for class $B$.
 
-In simple terms, classification is performed by plugging in the
-desired instance of input data $\vec{x}$ from our testing set, and
-seeing whether class $A$ or class $B$ is more likely (remember: this is all just
-probabilities). This is equivalent to deciding if the output value of the Normal
+In simple terms, classification is performed by plugging an
+instance of input data, $\vec{x}$, from our testing set, and
+checking whether class $A$ or class $B$ is more likely (remember: this is all
+just probabilities). This is equivalent to deciding if the output value of the Normal
 Distribution equation is higher for class $A$'s equation, or class $B$'s.
 
-\begin{displaymath}
+\begin{equation}
+\label{e_ce}
   \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_A| e^{D'(\vec{x},M_A,\Sigma_A)}}} 
-  \gtrless^{\omega_A}_{\omega_B}
+  \; \gtrless^{\omega_A}_{\omega_B} \; 
   \dfrac{1}{\sqrt{(2\pi)^d |\Sigma_B| e^{D'(\vec{x},M_B,\Sigma_B)}}}
-\end{displaymath}
+\end{equation}
 
 This formula gives the probability that a given data point is in the
 distribution.  Given the covariance matrix and mean vector for both
@@ -222,27 +198,26 @@ class A and class B, after many steps of simplification (which can be
 seen in Appendix \ref{app:derivation}), we get the following
 inequality:
 
-\begin{align*}
-  %
-  ln|\Sigma_B| - ln|\Sigma_A| +
-  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-\end{align*}
+\begin{equation}
+\label{e_ce2}
+ln|\Sigma_B| - ln|\Sigma_A| + D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
+\; \gtrless^{\omega_A}_{\omega_B} \; 0 
+\end{equation}
 
-We recommend the Jama library, available at
-\href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/}
-for performing the matrix calculations.  Or the NumPy library,
-available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}.
+For performing the matrix calculations necessary to create this expression, we
+recommend the Jama library, available at
+\href{http://math.nist.gov/javanumerics/jama/}{http://math.nist.gov/javanumerics/jama/},
+if you are programming in Java, or the NumPy library,
+available at \href{http://numpy.scipy.org/}{http://numpy.scipy.org/}, if you are
+programming in Python.
 
 \subsection{Classify!}
 
-Now that we have our formula, to classify any one instance of
-$\vec{x}$, we just plug it into our formula.  The result will be a
-scalar number, which indicates class $A$ if it is less than $0$ and class
-$B$ otherwise.
-
+Equation \ref{e_ce2} is the final product we are looking for. With this equation
+in hand, we can classify any instance of our data, $\vec{x}$, by simply plugging
+it in.  The output from the equation will be a single, scalar number. If that
+number is greater than $0$, then $\vec{x}$ \emph{most likely} belongs to class
+$A$, otherwise $\vec{x}$ belongs to class $B$.
 
 % -----------------------------------------------------------------------------
 % -----------------------------------------------------------------------------
@@ -251,9 +226,10 @@ $B$ otherwise.
 \label{sec:obayes}
 
 The only difference between Na\"ive Bayes and Optimal Bayes classifiers
-is the covariance matrix used.  In the Na\"ive classifier, the matrix
-was just a diagonal matrix (Section \ref{ss:norm_dist}), but in the optimal one,
-a full matrix is used, which has the following structure.
+is the covariance matrix used.  In a Na\"ive Bayes classifier, the covariance
+matrix is just a diagonal matrix (Section \ref{ss:norm_dist}), but in an
+Optimal Bayes classifier, we use a full matrix instead, which has the following
+structure:
 
 \begin{displaymath}
 \begin{bmatrix} \sigma_1\sigma_1 & \sigma_1\sigma_2 & \cdots & \sigma_1\sigma_d \\
@@ -263,7 +239,7 @@ a full matrix is used, which has the following structure.
 \end{bmatrix}
 \end{displaymath}
 
-Each of those entries is calculated by:
+Where each entry is calculated by:
 
 \begin{displaymath}
  \sigma_i\sigma_j = E [{(x_i - \mu_i)(x_j - \mu_j)}]
@@ -275,21 +251,21 @@ same, the only difference is the complexity of the covariance matrix.
 
 % -----------------------------------------------------------------------------
 % -----------------------------------------------------------------------------
-\section{Building A Classifier}
+\section{Programming a Classifier}
 \label{sec:tutorial}
 
-With this understanding of the theory, we can build a working
+Now that we understand the theory, we can implement a working
 classifier.  We are given $n$ data points, each consisting of $k$
 numerical observations and a classification.
 
 This data is often stored as a file wherein each line contains
 observations, an indication of the classification, and possibly
 extraneous data.  This must be parsed and stored in some convenient
-structure.
+data structure of your own design.
 
 \subsection{Partition the Data into Training and Testing Sets}
 
-We begin by partition the dataset into a \emph{training set} and a
+We begin by partitioning the dataset into a \emph{training set} and a
 \emph{testing set}.  The purpose of the \emph{training set} is to
 build the covariance matrix and mean vector for each class.  The
 purpose of the \emph{testing set} is to provide independent data with
@@ -298,12 +274,12 @@ which to test the accuracy of the classifier.
 The simplest way to partition the dataset is to choose the first
 $\ceil{n/2}$ tuples for the \emph{training set} and the remaining
 $\floor{n/2}$ tuples for the \emph{testing set}.  We will discuss
-other partitioning schemes at the end of this section.
+other partitioning schemes in Section \ref{ss_testing}.
 
 \subsection{Partition the Training Set by Class}
 
 Next, we further partition the \emph{training set} by class.  If there
-are two classes $A$ and $B$, let the set of data points belonging to
+are two classes, $A$ and $B$, let the set of data points belonging to
 class $A$ be $T_A$ and similarly let the set of data points belonging
 to $B$ be $T_B$.
 
@@ -312,86 +288,82 @@ classification will almost certainly be hopelessly inaccurate.  It is
 important to have some strategy to handle this case, and a reasonable
 strategy would be to throw an error.
 
-\subsection{Calculate the Mean Vectors}
+\subsection{Calculate the Mean Vector}
 
-The mean vector is a $k$-vector $M$ (where $k$ is the number of
-numerical observations in each data point), in which the $i$th element
-is the mean of all $i$th numerical observations.  We construct this by
-first building a sum vector whose $i$th element is the sum of all
-$i$th numerical observations, then divide each element by the number
-of data points.
+A mean vector is a $k$-dimensional vector $M$ (recall that $k$ is the number
+of numerical observations in each data point), in which the
+$i$\textsuperscript{th} element is the mean of all $i$\textsuperscript{th}
+numerical observations. It is constructed by first building a sum vector whose
+$i$\textsuperscript{th} element is the sum of all $i$\textsuperscript{th}
+numerical observations, and then dividing each element by the number of data
+points.
 
-We do this to build a mean vector $M_A$ for $T_A$ and $M_B$ for $T_B$
-separately.
+We will need to do this twice, once to build the mean vector $M_A$ for training
+data $T_A$ and again, separately, to build $M_B$ for the training set $T_B$.
 
 \subsection{Calculate the Variance Vector}
 
-Whether we are building a na\"ive or optimal classifier, we must
-calculate the variances for each observation just as we calculated the
-mean for each observation in the previous step.
+Whether we are building a Na\"ive Bayes or Optimal Bayes classifier, we must
+calculate the variances for each observation, similar to how we calculated
+the mean for each observation in the previous step.
 
-We construct the variance vector by instantiating a $k$-vector $V$ and
-iterating over the data points.  For the $i$th element of each data
-point, we subtract from its value the $i$th element in our mean
+We construct the variance vector by instantiating a $k$- dimensional vector $V$
+and iterating over the data points.  For the $i$\textsuperscript{th} element of each data
+point, we subtract from its value the $i$\textsuperscript{th} element in our mean
 vector.  We square this value and add the result to the $i$th element
 of $V$.  Once we've iterated over every data point, we divide each
 element of $V$ by the number of data points, and take the square root.
 
-We do this to build a variance vector $V_A$ for $T_A$ and $V_B$ for
-$T_B$ separately.
+Once again, we must repeat this procedure twice, as we must independently build
+$V_A$ (with respect to $M_A$ and $T_A$) and $V_B$ (with respect to $M_B$
+and $T_B$).
 
 \subsection{Calculate the Covariance Matrix}
 
-If we are building the optimal classifier and our variance vector $V$
-is a column vector, our covariance matrix is simply $V^TV$.
+If we were building an Optimal Bayes classifier and our variance vector $V$ was
+a column vector, then our covariance matrix would simply be $V^TV$. As we have
+two classes, the actual matrices you have to calculate are as follows, and
+should be very easy to create if you are using any half-decent matrix library.
+\[
+\Sigma_A = V_A^TV_A \qquad \qquad \Sigma_B = V_B^TV_B
+\]
 
-We have $\Sigma_A = V_A^TV_A$ and $\Sigma_B = V_B^TV_B$.
-
-If we are building the na\"ive classifier, we take the covariance
-matrices from the optimal classifier and simply set every element to
-$0$ except along the diagonal starting at the top left and ending at
-the bottom right.
+If we are building a Na\"ive Bayes classifier, we can take the ``full''
+covariance matrices we just created for the Optimal Bayes classifier and simply
+set every element to $0$, except for those found along the main diagonal (that
+is, the diagonal starting at the top left and ending at the bottom right).
 
 \subsection{Classify!}
 
-Now we use the formula we derived earlier:
+We now have everything we need in order to use Equation \ref{e_ce2}, repeated
+here for reference:
 
-\begin{align*}
-  %
-  ln|\Sigma_B| - ln|\Sigma_A| +
-  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
-  &\gtrless^{\omega_A}_{\omega_B}
-  0 \\
-  %
-\end{align*}
+\begin{equation*}
+ln|\Sigma_B| - ln|\Sigma_A| + D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A)
+\; \gtrless^{\omega_A}_{\omega_B} \; 0 
+\end{equation*}
 
-Where $\vec{x}$ is a vector of numerical observations we would like to
-classify.
-
-We calculate the classification value $c$:
-
-\begin{align*}
-  %
+Recall that $\vec{x}$ is a vector of numerical observations from our
+\emph{testing set} that we would like to classify. We calculate the
+classification value, $c$, as follows:
+\[\begin{split}
   c 
-  &=
-  ln|\Sigma_B| - ln|\Sigma_A| +
-  D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A) \\
-  &=
-  ln|\Sigma_B| - ln|\Sigma_A| +
-  (\vec{x}-M_B)^T \Sigma_B^{-1} (\vec{x}-M_B) - 
-  (\vec{x}-M_A)^T \Sigma_A^{-1} (\vec{x}-M_A)
-  %
-\end{align*}
+  &= ln|\Sigma_B| - ln|\Sigma_A| + D'(\vec{x},M_B,\Sigma_B) - D'(\vec{x},M_A,\Sigma_A) \\
+  &= ln|\Sigma_B| - ln|\Sigma_A| + (\vec{x}-M_B)^T \Sigma_B^{-1} (\vec{x}-M_B) -(\vec{x}-M_A)^T \Sigma_A^{-1} (\vec{x}-M_A)
+\end{split} \]
 
-If this $c$ is greater than zero, the observations most likely belong
-to class $A$, otherwise class $B$.
+If $c$ is greater than zero, the observations most likely belong
+to class $A$, otherwise class $B$, and our program should report as much.
 
+\begin{note}
 Be careful when calculating the inverse of the covariance matrix,
 because it may be singular, i.e. have no inverse.  In this case, your
 library may provide a \emph{Pseudo-Inverse}\cite{wiki_pinv} which is
-an approximation of the
+a safe approximation of the true inverse.
+\end{note}
 
 \subsection{Testing}
+\label{ss_testing}
 
 In the first step, we partitioned the sample into a \emph{Training
   Set} and a \emph{Testing Set}.  To test, we simply run the
@@ -417,7 +389,8 @@ together and the results averaged.
 \section{Derivation}
 \label{app:derivation}
 
-The full derivation of the given formula follows:
+The full derivation from Equation \ref{e_ce} to Equation \ref{e_ce2} is
+as follows:
 
 \begin{align*}
   %
