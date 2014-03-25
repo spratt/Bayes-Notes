@@ -37,7 +37,7 @@ BIBTEX  	= bibtex
 
 # if your open prorgram isn't listed, OR (||) it to the end
 open: ${PDF}
-	xdg-open $<
+	open $< || xdg-open $<
 
 ${PDF}: ${MAIN_TEX} ${PARTS_TEX} ${FIGURES} ${BIBFILES} ${STYLES_STY}
 
