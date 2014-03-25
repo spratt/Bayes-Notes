@@ -349,8 +349,10 @@ to class $A$, otherwise class $B$, and our program should report as much.
 \begin{note}
 Be careful when calculating the inverse of the covariance matrix,
 because it may be singular, i.e. have no inverse.  In this case, your
-library may provide a \emph{Pseudo-Inverse}\cite{wiki_pinv} which is
-a safe approximation of the true inverse.
+library may provide a \emph{pseudo-inverse}\cite{wiki_pinv} which is
+a safe approximation of the true inverse. You will also need to calculate the
+\emph{pseudo-determinant}\cite{wiki_pdet}, since the determinant of a singular
+matrix is $0$, and the logarithm of $0$ is undefined.
 \end{note}
 
 \subsection{Testing}
