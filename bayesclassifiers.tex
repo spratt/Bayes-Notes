@@ -30,6 +30,7 @@
 
 \title{Implementing Bayes Classifiers}
 \author{Gregory Bint \\
+  Evan Huus \\
   Simon Pratt
   \footnote{Simon can be reached at
     \href{mailto:spratt@scs.carleton.ca}{spratt@scs.carleton.ca} for questions.} \\
@@ -318,6 +319,11 @@ iterated over every data point, we divide each element of $\Sigma$ by
 As with the mean vector, we must repeat this procedure twice, as we must
 independently build $\Sigma_A$ (with respect to $M_A$ and
 $T_A$) and $\Sigma_B$ (with respect to $M_B$ and $T_B$).
+
+The formula for $\Sigma_A$ is as follows:
+
+\[ \Sigma_A = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - M_A)(x_i - M_A)^{T}
+\]
 
 If we are building a Na\"ive Bayes classifier, we can take the ``full''
 covariance matrices we just created for the Optimal Bayes classifier and simply
