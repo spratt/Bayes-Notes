@@ -301,32 +301,23 @@ points.
 We will need to do this twice, once to build the mean vector $M_A$ for training
 data $T_A$ and again, separately, to build $M_B$ for the training set $T_B$.
 
-\subsection{Calculate the Variance Vector}
+\subsection{Calculate the Covariance Matrix}
 
 Whether we are building a Na\"ive Bayes or Optimal Bayes classifier, we must
 calculate the variances for each observation, similar to how we calculated
 the mean for each observation in the previous step.
 
-We construct the variance vector by instantiating a $k$- dimensional vector $V$
-and iterating over the data points.  For the $i$\textsuperscript{th} element of each data
-point, we subtract from its value the $i$\textsuperscript{th} element in our mean
-vector.  We square this value and add the result to the $i$th element
-of $V$.  Once we've iterated over every data point, we divide each
-element of $V$ by the number of data points, and take the square root.
+We construct the covariance matrix by instantiating a $k \times k$ matrix,
+$\Sigma$, with zeroes, and iterating over the data points.  For each data point
+(itself a $k$-dimensional vector), we subtract our mean vector $M$. We take the
+outer product of the result (itself times its transpose) which results in a
+new $k \times k$ matrix. This new matrix gets added to $\Sigma$. Once we've
+iterated over every data point, we divide each element of $\Sigma$ by
+\emph{one less than} the number of data points.
 
-Once again, we must repeat this procedure twice, as we must independently build
-$V_A$ (with respect to $M_A$ and $T_A$) and $V_B$ (with respect to $M_B$
-and $T_B$).
-
-\subsection{Calculate the Covariance Matrix}
-
-If we were building an Optimal Bayes classifier and our variance vector $V$ was
-a column vector, then our covariance matrix would simply be $V^TV$. As we have
-two classes, the actual matrices you have to calculate are as follows, and
-should be very easy to create if you are using any half-decent matrix library.
-\[
-\Sigma_A = V_A^TV_A \qquad \qquad \Sigma_B = V_B^TV_B
-\]
+As with the mean vector, we must repeat this procedure twice, as we must
+independently build $\Sigma_A$ (with respect to $M_A$ and
+$T_A$) and $\Sigma_B$ (with respect to $M_B$ and $T_B$).
 
 If we are building a Na\"ive Bayes classifier, we can take the ``full''
 covariance matrices we just created for the Optimal Bayes classifier and simply
@@ -358,8 +349,10 @@ to class $A$, otherwise class $B$, and our program should report as much.
 \begin{note}
 Be careful when calculating the inverse of the covariance matrix,
 because it may be singular, i.e. have no inverse.  In this case, your
-library may provide a \emph{Pseudo-Inverse}\cite{wiki_pinv} which is
-a safe approximation of the true inverse.
+library may provide a \emph{pseudo-inverse}\cite{wiki_pinv} which is
+a safe approximation of the true inverse. You will also need to calculate the
+\emph{pseudo-determinant}\cite{wiki_pdet}, since the determinant of a singular
+matrix is $0$, and the logarithm of $0$ is undefined.
 \end{note}
 
 \subsection{Testing}
