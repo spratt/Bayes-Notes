@@ -4,15 +4,15 @@
 # November 10, 2010
 ######################################################################
 
-ASSIGN      = bayesclassifiers
+ASSIGN		= bayesclassifiers
 
-REFERENCES 	= references
+REFERENCES	= references
 
-PARTS       = 
+PARTS		=
 
-FIGURES 	=
+FIGURES		=
 
-STYLES      = 
+STYLES		=
 
 ######################################################################
 # Modify the following at your own risk
@@ -26,7 +26,7 @@ PARTS_TEX	= ${addsuffix .tex,${PARTS}}
 
 BIBFILES	= ${addsuffix .bib,${REFERENCES}}
 
-STYLES_STY  = ${addsuffix .sty,${STYLES}}
+STYLES_STY	= ${addsuffix .sty,${STYLES}}
 
 PDF     	= ${ASSIGN}.pdf
 
@@ -37,7 +37,7 @@ BIBTEX  	= bibtex
 
 # if your open prorgram isn't listed, OR (||) it to the end
 open: ${PDF}
-	open $< || gnome-open $<
+	xdg-open $<
 
 ${PDF}: ${MAIN_TEX} ${PARTS_TEX} ${FIGURES} ${BIBFILES} ${STYLES_STY}
 
